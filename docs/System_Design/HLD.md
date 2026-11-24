@@ -64,20 +64,7 @@ This approach is appropriate for the initial scale and scope because it:
 
 The initial release does not require microservices, message brokers, or a separate backend deployment.
 
-### 2.2 High-Level Components
-
-| Component | Responsibility |
-|---|---|
-| Web browser | Provides the user interface and sends requests to Schoolex. |
-| Next.js application | Hosts the frontend and server-side application functionality. |
-| Application services | Coordinate application operations and enforce business rules. |
-| Authorization layer | Checks user roles and access to requested records and operations. |
-| Prisma ORM | Provides controlled access to PostgreSQL and manages schema migrations. |
-| Supabase PostgreSQL | Stores persistent application data. |
-| Clerk | Provides user authentication and session management. |
-| Object storage | Stores uploaded photographs and documents. Cloudflare R2 is the proposed provider. |
-
-### 2.3 Component Interaction
+### 2.2 Component Interaction
 
 1. A user opens Schoolex through a supported web browser.
 2. The user authenticates through Clerk.
@@ -90,7 +77,7 @@ The initial release does not require microservices, message brokers, or a separa
 
 The browser must not receive direct access to the PostgreSQL database or unrestricted storage credentials.
 
-### 2.4 Architectural Principles
+### 2.3 Architectural Principles
 
 The architecture will follow these principles:
 
@@ -183,6 +170,7 @@ The application will be organized into functional modules corresponding to the V
 
 - Identity and user management.
 - Student and guardian records.
+- Schedule management
 - Teacher and staff records.
 - Academic management.
 - Enrollment management.

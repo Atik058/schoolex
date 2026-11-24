@@ -1,26 +1,105 @@
+
 @import "tailwindcss";
 
+/* =================================
+   LIGHT THEME
+================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FAF8FF;
+  --foreground: #1D1B23;
+
+  --surface: #FFFFFF;
+  --muted: #F3EEFF;
+  --border: #E9E3F2;
+
+  --primary: #8C4AF2;
+  --secondary: #6B56F6;
+
+  --warning: #F4901F;
+  --danger: #FF394B;
+  --success: #1BD084;
+  --success-light: #5DF888;
 }
+
+/* =================================
+   DARK THEME
+================================= */
+
+.dark {
+  --background: #17141F;
+  --foreground: #F8F5FF;
+
+  --surface: #211D2B;
+  --muted: #30283D;
+  --border: #3A3248;
+
+  --primary: #A978FF;
+  --secondary: #9385FF;
+
+  --warning: #F9A94C;
+  --danger: #FF6674;
+  --success: #36D99A;
+  --success-light: #5DF888;
+}
+
+/* =================================
+   DESIGN TOKENS
+================================= */
 
 @theme inline {
+
+  /* Typography */
+  --font-sans: var(--font-poppins);
+
+  --text-page-heading: 30px;
+  --text-page-heading--weight: 600;
+
+  --text-section-heading: 22px;
+  --text-section-heading--weight: 600;
+
+  --text-card-heading: 18px;
+  --text-card-heading--weight: 600;
+
+  --text-body: 14px;
+  --text-body--weight: 400;
+
+  --text-button: 14px;
+  --text-button--weight: 500;
+
+  --text-label: 13px;
+  --text-label--weight: 500;
+
+  --text-helper: 12px;
+  --text-helper--weight: 400;
+
+  /* Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-success-light: var(--success-light);
+
+  /* Radius */
+  --radius-card: 12px;
+  --radius-button: 8px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* =================================
+   GLOBAL STYLES
+================================= */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins), sans-serif;
 }

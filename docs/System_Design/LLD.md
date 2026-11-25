@@ -956,14 +956,13 @@ These supporting entities are important for operational integrity and should be 
 
 ### 4.11 Prisma Schema
 
-
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client"
+    output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
 }
 
 // -----------------------------------------------------
@@ -971,46 +970,46 @@ datasource db {
 // -----------------------------------------------------
 
 enum UserRole {
-  ADMIN
-  TEACHER
-  STUDENT
-  GUARDIAN
+    ADMIN
+    TEACHER
+    STUDENT
+    GUARDIAN
 }
 
 enum Gender {
-  MALE
-  FEMALE
-  OTHER
+    MALE
+    FEMALE
+    OTHER
 }
 
 enum AttendanceStatus {
-  PRESENT
-  ABSENT
-  LATE
-  EXCUSED
+    PRESENT
+    ABSENT
+    LATE
+    EXCUSED
 }
 
 enum ResultStatus {
-  PASS
-  FAIL
-  PENDING
+    PASS
+    FAIL
+    PENDING
 }
 
 enum PromotionItemStatus {
-  PROMOTED
-  RE_ENROLLED
-  FAILED
-  SKIPPED
+    PROMOTED
+    RE_ENROLLED
+    FAILED
+    SKIPPED
 }
 
 enum Weekday {
-  SUNDAY
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
+    SUNDAY
+    MONDAY
+    TUESDAY
+    WEDNESDAY
+    THURSDAY
+    FRIDAY
+    SATURDAY
 }
 
 // -----------------------------------------------------
@@ -1018,95 +1017,95 @@ enum Weekday {
 // -----------------------------------------------------
 
 model User {
-  id           String   @id @default(uuid()) @db.Uuid
-  username     String   @unique @db.VarChar(50)
-  email        String?  @unique @db.VarChar(255)
-  passwordHash String   @db.VarChar(255)
-  role         UserRole
-  isActive     Boolean  @default(true)
-  lastLoginAt  DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+    id           String    @id @default(uuid()) @db.Uuid
+    username     String    @unique @db.VarChar(50)
+    email        String?   @unique @db.VarChar(255)
+    passwordHash String    @db.VarChar(255)
+    role         UserRole
+    isActive     Boolean   @default(true)
+    lastLoginAt  DateTime?
+    createdAt    DateTime  @default(now())
+    updatedAt    DateTime  @updatedAt
 
-  student Student?
-  guardian Guardian?
-  teacher Teacher?
+    student  Student?
+    guardian Guardian?
+    teacher  Teacher?
 
-  createdAnnouncements Announcement[] @relation("AnnouncementCreator")
+    createdAnnouncements Announcement[] @relation("AnnouncementCreator")
 
-  @@index([role])
-  @@index([isActive])
+    @@index([role])
+    @@index([isActive])
 }
 
 model Student {
-  id           String    @id @default(uuid()) @db.Uuid
-  userId       String?   @unique @db.Uuid
-  admissionNo  String    @unique @db.VarChar(50)
-  firstName    String    @db.VarChar(100)
-  lastName     String?   @db.VarChar(100)
-  dateOfBirth  DateTime? @db.Date
-  gender       Gender?
-  phone        String?   @db.VarChar(20)
-  address      String?
-  admissionDate DateTime? @db.Date
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+    id            String    @id @default(uuid()) @db.Uuid
+    userId        String?   @unique @db.Uuid
+    admissionNo   String    @unique @db.VarChar(50)
+    firstName     String    @db.VarChar(100)
+    lastName      String?   @db.VarChar(100)
+    dateOfBirth   DateTime? @db.Date
+    gender        Gender?
+    phone         String?   @db.VarChar(20)
+    address       String?
+    admissionDate DateTime? @db.Date
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
 
-  user         User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
-  guardians    StudentGuardian[]
-  enrollments  Enrollment[]
+    user        User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+    guardians   StudentGuardian[]
+    enrollments Enrollment[]
 
-  @@index([firstName, lastName])
+    @@index([firstName, lastName])
 }
 
 model Guardian {
-  id           String   @id @default(uuid()) @db.Uuid
-  userId       String?  @unique @db.Uuid
-  firstName    String   @db.VarChar(100)
-  lastName     String?  @db.VarChar(100)
-  phone        String   @db.VarChar(20)
-  email        String?  @db.VarChar(255)
-  address      String?
-  occupation   String?  @db.VarChar(100)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+    id         String   @id @default(uuid()) @db.Uuid
+    userId     String?  @unique @db.Uuid
+    firstName  String   @db.VarChar(100)
+    lastName   String?  @db.VarChar(100)
+    phone      String   @db.VarChar(20)
+    email      String?  @db.VarChar(255)
+    address    String?
+    occupation String?  @db.VarChar(100)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 
-  user         User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
-  students     StudentGuardian[]
+    user     User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+    students StudentGuardian[]
 }
 
 model StudentGuardian {
-  studentId       String  @db.Uuid
-  guardianId      String  @db.Uuid
-  relationship    String? @db.VarChar(50)
-  isPrimary       Boolean @default(false)
-  isEmergencyContact Boolean @default(false)
+    studentId          String  @db.Uuid
+    guardianId         String  @db.Uuid
+    relationship       String? @db.VarChar(50)
+    isPrimary          Boolean @default(false)
+    isEmergencyContact Boolean @default(false)
 
-  student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  guardian Guardian @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+    student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    guardian Guardian @relation(fields: [guardianId], references: [id], onDelete: Cascade)
 
-  @@id([studentId, guardianId])
-  @@index([guardianId])
+    @@id([studentId, guardianId])
+    @@index([guardianId])
 }
 
 model Teacher {
-  id          String   @id @default(uuid()) @db.Uuid
-  userId      String?  @unique @db.Uuid
-  employeeNo  String   @unique @db.VarChar(50)
-  firstName   String   @db.VarChar(100)
-  lastName    String?  @db.VarChar(100)
-  phone       String?  @db.VarChar(20)
-  email       String?  @db.VarChar(255)
-  address     String?
-  joiningDate DateTime? @db.Date
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+    id          String    @id @default(uuid()) @db.Uuid
+    userId      String?   @unique @db.Uuid
+    employeeNo  String    @unique @db.VarChar(50)
+    firstName   String    @db.VarChar(100)
+    lastName    String?   @db.VarChar(100)
+    phone       String?   @db.VarChar(20)
+    email       String?   @db.VarChar(255)
+    address     String?
+    joiningDate DateTime? @db.Date
+    isActive    Boolean   @default(true)
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
 
-  user        User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
-  assignments TeacherAssignment[]
+    user        User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+    assignments TeacherAssignment[]
 
-  @@index([isActive])
+    @@index([isActive])
 }
 
 // -----------------------------------------------------
@@ -1114,82 +1113,82 @@ model Teacher {
 // -----------------------------------------------------
 
 model AcademicYear {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String   @unique @db.VarChar(50)
-  startDate DateTime @db.Date
-  endDate   DateTime @db.Date
-  isActive  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        String   @id @default(uuid()) @db.Uuid
+    name      String   @unique @db.VarChar(50)
+    startDate DateTime @db.Date
+    endDate   DateTime @db.Date
+    isActive  Boolean  @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  enrollments      Enrollment[]
-  classSubjects    ClassSubject[]
-  examinations     Examination[]
-  promotionBatches PromotionBatch[]
+    enrollments      Enrollment[]
+    classSubjects    ClassSubject[]
+    examinations     Examination[]
+    promotionBatches PromotionBatch[]
 
-  @@index([isActive])
+    @@index([isActive])
 }
 
 model Class {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String   @unique @db.VarChar(50)
-  sortOrder Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        String   @id @default(uuid()) @db.Uuid
+    name      String   @unique @db.VarChar(50)
+    sortOrder Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  sections       Section[]
-  classSubjects  ClassSubject[]
-  examinationClasses ExaminationClass[]
+    sections           Section[]
+    classSubjects      ClassSubject[]
+    examinationClasses ExaminationClass[]
 
-  @@index([sortOrder])
+    @@index([sortOrder])
 }
 
 model Section {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String   @db.VarChar(50)
-  classId   String   @db.Uuid
-  capacity  Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        String   @id @default(uuid()) @db.Uuid
+    name      String   @db.VarChar(50)
+    classId   String   @db.Uuid
+    capacity  Int?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  class       Class        @relation(fields: [classId], references: [id], onDelete: Restrict)
-  enrollments Enrollment[]
-  assignments TeacherAssignment[]
-  timetable   TimetableEntry[]
-  announcementAudiences AnnouncementClassAudience[]
+    class                 Class                       @relation(fields: [classId], references: [id], onDelete: Restrict)
+    enrollments           Enrollment[]
+    assignments           TeacherAssignment[]
+    timetable             TimetableEntry[]
+    announcementAudiences AnnouncementClassAudience[]
 
-  @@unique([classId, name])
-  @@index([classId])
+    @@unique([classId, name])
+    @@index([classId])
 }
 
 model Subject {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String   @unique @db.VarChar(100)
-  code      String   @unique @db.VarChar(30)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        String   @id @default(uuid()) @db.Uuid
+    name      String   @unique @db.VarChar(100)
+    code      String   @unique @db.VarChar(30)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  classSubjects ClassSubject[]
-  examinationSubjects ExaminationSubject[]
+    classSubjects       ClassSubject[]
+    examinationSubjects ExaminationSubject[]
 }
 
 // Defines which subjects are offered to a class in an academic year.
 model ClassSubject {
-  id             String   @id @default(uuid()) @db.Uuid
-  academicYearId String   @db.Uuid
-  classId        String   @db.Uuid
-  subjectId      String   @db.Uuid
-  createdAt      DateTime @default(now())
+    id             String   @id @default(uuid()) @db.Uuid
+    academicYearId String   @db.Uuid
+    classId        String   @db.Uuid
+    subjectId      String   @db.Uuid
+    createdAt      DateTime @default(now())
 
-  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
-  class        Class        @relation(fields: [classId], references: [id], onDelete: Restrict)
-  subject      Subject      @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+    academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+    class        Class        @relation(fields: [classId], references: [id], onDelete: Restrict)
+    subject      Subject      @relation(fields: [subjectId], references: [id], onDelete: Restrict)
 
-  assignments TeacherAssignment[]
+    assignments TeacherAssignment[]
 
-  @@unique([academicYearId, classId, subjectId])
-  @@index([classId, academicYearId])
-  @@index([subjectId])
+    @@unique([academicYearId, classId, subjectId])
+    @@index([classId, academicYearId])
+    @@index([subjectId])
 }
 
 // -----------------------------------------------------
@@ -1197,28 +1196,28 @@ model ClassSubject {
 // -----------------------------------------------------
 
 model Enrollment {
-  id             String   @id @default(uuid()) @db.Uuid
-  studentId      String   @db.Uuid
-  academicYearId String   @db.Uuid
-  sectionId      String   @db.Uuid
-  enrolledAt     DateTime @default(now())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+    id             String   @id @default(uuid()) @db.Uuid
+    studentId      String   @db.Uuid
+    academicYearId String   @db.Uuid
+    sectionId      String   @db.Uuid
+    enrolledAt     DateTime @default(now())
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
 
-  student      Student      @relation(fields: [studentId], references: [id], onDelete: Restrict)
-  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
-  section      Section      @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+    student      Student      @relation(fields: [studentId], references: [id], onDelete: Restrict)
+    academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+    section      Section      @relation(fields: [sectionId], references: [id], onDelete: Restrict)
 
-  attendance      Attendance[]
-  marks           StudentMark[]
-  annualResult    AnnualResult?
+    attendance   Attendance[]
+    marks        StudentMark[]
+    annualResult AnnualResult?
 
-  sourcePromotionItems PromotionBatchItem[] @relation("SourceEnrollment")
-  targetPromotionItems PromotionBatchItem[] @relation("TargetEnrollment")
+    sourcePromotionItems PromotionBatchItem[] @relation("SourceEnrollment")
+    targetPromotionItems PromotionBatchItem[] @relation("TargetEnrollment")
 
-  @@unique([studentId, academicYearId])
-  @@index([academicYearId, sectionId])
-  @@index([studentId])
+    @@unique([studentId, academicYearId])
+    @@index([academicYearId, sectionId])
+    @@index([studentId])
 }
 
 // -----------------------------------------------------
@@ -1226,52 +1225,52 @@ model Enrollment {
 // -----------------------------------------------------
 
 model TeacherAssignment {
-  id             String   @id @default(uuid()) @db.Uuid
-  teacherId      String   @db.Uuid
-  classSubjectId String   @db.Uuid
-  sectionId      String   @db.Uuid
-  createdAt      DateTime @default(now())
+    id             String   @id @default(uuid()) @db.Uuid
+    teacherId      String   @db.Uuid
+    classSubjectId String   @db.Uuid
+    sectionId      String   @db.Uuid
+    createdAt      DateTime @default(now())
 
-  teacher      Teacher      @relation(fields: [teacherId], references: [id], onDelete: Restrict)
-  classSubject ClassSubject @relation(fields: [classSubjectId], references: [id], onDelete: Restrict)
-  section      Section      @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+    teacher      Teacher      @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+    classSubject ClassSubject @relation(fields: [classSubjectId], references: [id], onDelete: Restrict)
+    section      Section      @relation(fields: [sectionId], references: [id], onDelete: Restrict)
 
-  timetableEntries TimetableEntry[]
+    timetableEntries TimetableEntry[]
 
-  @@unique([sectionId, classSubjectId])
-  @@index([teacherId])
-  @@index([sectionId])
+    @@unique([sectionId, classSubjectId])
+    @@index([teacherId])
+    @@index([sectionId])
 }
 
 model Period {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String   @unique @db.VarChar(30)
-  startTime DateTime @db.Time
-  endTime   DateTime @db.Time
-  sortOrder Int
-  isBreak   Boolean  @default(false)
+    id        String   @id @default(uuid()) @db.Uuid
+    name      String   @unique @db.VarChar(30)
+    startTime DateTime @db.Time
+    endTime   DateTime @db.Time
+    sortOrder Int
+    isBreak   Boolean  @default(false)
 
-  timetableEntries TimetableEntry[]
+    timetableEntries TimetableEntry[]
 
-  @@index([sortOrder])
+    @@index([sortOrder])
 }
 
 model TimetableEntry {
-  id                 String   @id @default(uuid()) @db.Uuid
-  sectionId          String   @db.Uuid
-  assignmentId       String   @db.Uuid
-  periodId           String   @db.Uuid
-  weekday            Weekday
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+    id           String   @id @default(uuid()) @db.Uuid
+    sectionId    String   @db.Uuid
+    assignmentId String   @db.Uuid
+    periodId     String   @db.Uuid
+    weekday      Weekday
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
 
-  section    Section           @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  assignment TeacherAssignment @relation(fields: [assignmentId], references: [id], onDelete: Restrict)
-  period     Period            @relation(fields: [periodId], references: [id], onDelete: Restrict)
+    section    Section           @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+    assignment TeacherAssignment @relation(fields: [assignmentId], references: [id], onDelete: Restrict)
+    period     Period            @relation(fields: [periodId], references: [id], onDelete: Restrict)
 
-  @@unique([sectionId, weekday, periodId])
-  @@index([assignmentId])
-  @@index([weekday, periodId])
+    @@unique([sectionId, weekday, periodId])
+    @@index([assignmentId])
+    @@index([weekday, periodId])
 }
 
 // -----------------------------------------------------
@@ -1279,18 +1278,18 @@ model TimetableEntry {
 // -----------------------------------------------------
 
 model Attendance {
-  id             String           @id @default(uuid()) @db.Uuid
-  enrollmentId   String           @db.Uuid
-  attendanceDate DateTime         @db.Date
-  status         AttendanceStatus
-  remarks        String?
-  submittedAt    DateTime         @default(now())
-  createdAt      DateTime         @default(now())
+    id             String           @id @default(uuid()) @db.Uuid
+    enrollmentId   String           @db.Uuid
+    attendanceDate DateTime         @db.Date
+    status         AttendanceStatus
+    remarks        String?
+    submittedAt    DateTime         @default(now())
+    createdAt      DateTime         @default(now())
 
-  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Restrict)
+    enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Restrict)
 
-  @@unique([enrollmentId, attendanceDate])
-  @@index([attendanceDate, status])
+    @@unique([enrollmentId, attendanceDate])
+    @@index([attendanceDate, status])
 }
 
 // -----------------------------------------------------
@@ -1298,81 +1297,81 @@ model Attendance {
 // -----------------------------------------------------
 
 model Examination {
-  id             String   @id @default(uuid()) @db.Uuid
-  academicYearId String   @db.Uuid
-  name           String   @db.VarChar(100)
-  startDate      DateTime? @db.Date
-  endDate        DateTime? @db.Date
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+    id             String    @id @default(uuid()) @db.Uuid
+    academicYearId String    @db.Uuid
+    name           String    @db.VarChar(100)
+    startDate      DateTime? @db.Date
+    endDate        DateTime? @db.Date
+    createdAt      DateTime  @default(now())
+    updatedAt      DateTime  @updatedAt
 
-  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
-  classes      ExaminationClass[]
+    academicYear AcademicYear       @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+    classes      ExaminationClass[]
 
-  @@unique([academicYearId, name])
-  @@index([academicYearId])
+    @@unique([academicYearId, name])
+    @@index([academicYearId])
 }
 
 // Connects an examination to the classes participating in it.
 model ExaminationClass {
-  id            String   @id @default(uuid()) @db.Uuid
-  examinationId String   @db.Uuid
-  classId       String   @db.Uuid
+    id            String @id @default(uuid()) @db.Uuid
+    examinationId String @db.Uuid
+    classId       String @db.Uuid
 
-  examination Examination @relation(fields: [examinationId], references: [id], onDelete: Cascade)
-  class       Class       @relation(fields: [classId], references: [id], onDelete: Restrict)
-  subjects    ExaminationSubject[]
+    examination Examination          @relation(fields: [examinationId], references: [id], onDelete: Cascade)
+    class       Class                @relation(fields: [classId], references: [id], onDelete: Restrict)
+    subjects    ExaminationSubject[]
 
-  @@unique([examinationId, classId])
-  @@index([classId])
+    @@unique([examinationId, classId])
+    @@index([classId])
 }
 
 // Defines the subjects and marks structure for a class in an examination.
 model ExaminationSubject {
-  id                 String   @id @default(uuid()) @db.Uuid
-  examinationClassId String   @db.Uuid
-  subjectId          String   @db.Uuid
-  maxMarks           Decimal  @db.Decimal(7, 2)
-  passMarks          Decimal? @db.Decimal(7, 2)
-  isOptional         Boolean  @default(false)
+    id                 String   @id @default(uuid()) @db.Uuid
+    examinationClassId String   @db.Uuid
+    subjectId          String   @db.Uuid
+    maxMarks           Decimal  @db.Decimal(7, 2)
+    passMarks          Decimal? @db.Decimal(7, 2)
+    isOptional         Boolean  @default(false)
 
-  examinationClass ExaminationClass @relation(fields: [examinationClassId], references: [id], onDelete: Cascade)
-  subject          Subject          @relation(fields: [subjectId], references: [id], onDelete: Restrict)
-  marks            StudentMark[]
+    examinationClass ExaminationClass @relation(fields: [examinationClassId], references: [id], onDelete: Cascade)
+    subject          Subject          @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+    marks            StudentMark[]
 
-  @@unique([examinationClassId, subjectId])
-  @@index([subjectId])
+    @@unique([examinationClassId, subjectId])
+    @@index([subjectId])
 }
 
 model StudentMark {
-  id                   String   @id @default(uuid()) @db.Uuid
-  enrollmentId         String   @db.Uuid
-  examinationSubjectId String   @db.Uuid
-  obtainedMarks        Decimal  @db.Decimal(7, 2)
-  remarks              String?
-  enteredAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+    id                   String   @id @default(uuid()) @db.Uuid
+    enrollmentId         String   @db.Uuid
+    examinationSubjectId String   @db.Uuid
+    obtainedMarks        Decimal  @db.Decimal(7, 2)
+    remarks              String?
+    enteredAt            DateTime @default(now())
+    updatedAt            DateTime @updatedAt
 
-  enrollment         Enrollment         @relation(fields: [enrollmentId], references: [id], onDelete: Restrict)
-  examinationSubject ExaminationSubject @relation(fields: [examinationSubjectId], references: [id], onDelete: Restrict)
+    enrollment         Enrollment         @relation(fields: [enrollmentId], references: [id], onDelete: Restrict)
+    examinationSubject ExaminationSubject @relation(fields: [examinationSubjectId], references: [id], onDelete: Restrict)
 
-  @@unique([enrollmentId, examinationSubjectId])
-  @@index([examinationSubjectId])
+    @@unique([enrollmentId, examinationSubjectId])
+    @@index([examinationSubjectId])
 }
 
 // Stores the calculated final result for a student's enrollment/year.
 model AnnualResult {
-  id                 String       @id @default(uuid()) @db.Uuid
-  enrollmentId       String       @unique @db.Uuid
-  totalMarks         Decimal?     @db.Decimal(10, 2)
-  averagePercentage  Decimal?     @db.Decimal(5, 2)
-  finalStatus        ResultStatus @default(PENDING)
-  calculatedAt       DateTime?
-  calculationVersion String?      @db.VarChar(30)
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
+    id                 String       @id @default(uuid()) @db.Uuid
+    enrollmentId       String       @unique @db.Uuid
+    totalMarks         Decimal?     @db.Decimal(10, 2)
+    averagePercentage  Decimal?     @db.Decimal(5, 2)
+    finalStatus        ResultStatus @default(PENDING)
+    calculatedAt       DateTime?
+    calculationVersion String?      @db.VarChar(30)
+    createdAt          DateTime     @default(now())
+    updatedAt          DateTime     @updatedAt
 
-  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Restrict)
+    enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Restrict)
 }
 
 // -----------------------------------------------------
@@ -1380,45 +1379,35 @@ model AnnualResult {
 // -----------------------------------------------------
 
 model PromotionBatch {
-  id             String   @id @default(uuid()) @db.Uuid
-  academicYearId String   @db.Uuid
-  createdAt      DateTime @default(now())
-  createdById    String   @db.Uuid
-  notes          String?
+    id             String   @id @default(uuid()) @db.Uuid
+    academicYearId String   @db.Uuid
+    createdAt      DateTime @default(now())
+    createdById    String   @db.Uuid
+    notes          String?
 
-  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
-  items        PromotionBatchItem[]
+    academicYear AcademicYear         @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+    items        PromotionBatchItem[]
 
-  @@index([academicYearId])
+    @@index([academicYearId])
 }
 
 model PromotionBatchItem {
-  id                  String              @id @default(uuid()) @db.Uuid
-  batchId             String              @db.Uuid
-  sourceEnrollmentId  String              @db.Uuid
-  targetEnrollmentId  String?             @unique @db.Uuid
-  status              PromotionItemStatus
-  processedAt         DateTime?
-  message             String?
+    id                 String              @id @default(uuid()) @db.Uuid
+    batchId            String              @db.Uuid
+    sourceEnrollmentId String              @db.Uuid
+    targetEnrollmentId String?             @unique @db.Uuid
+    status             PromotionItemStatus
+    processedAt        DateTime?
+    message            String?
 
-  batch PromotionBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+    batch PromotionBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
 
-  sourceEnrollment Enrollment @relation(
-    "SourceEnrollment",
-    fields: [sourceEnrollmentId],
-    references: [id],
-    onDelete: Restrict
-  )
+    sourceEnrollment Enrollment @relation("SourceEnrollment", fields: [sourceEnrollmentId], references: [id], onDelete: Restrict)
 
-  targetEnrollment Enrollment? @relation(
-    "TargetEnrollment",
-    fields: [targetEnrollmentId],
-    references: [id],
-    onDelete: Restrict
-  )
+    targetEnrollment Enrollment? @relation("TargetEnrollment", fields: [targetEnrollmentId], references: [id], onDelete: Restrict)
 
-  @@unique([batchId, sourceEnrollmentId])
-  @@index([status])
+    @@unique([batchId, sourceEnrollmentId])
+    @@index([status])
 }
 
 // -----------------------------------------------------
@@ -1426,46 +1415,41 @@ model PromotionBatchItem {
 // -----------------------------------------------------
 
 model Announcement {
-  id          String   @id @default(uuid()) @db.Uuid
-  title       String   @db.VarChar(200)
-  content     String
-  createdById String   @db.Uuid
-  publishedAt DateTime?
-  expiresAt   DateTime?
-  isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+    id          String    @id @default(uuid()) @db.Uuid
+    title       String    @db.VarChar(200)
+    content     String
+    createdById String    @db.Uuid
+    publishedAt DateTime?
+    expiresAt   DateTime?
+    isPublished Boolean   @default(false)
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
 
-  createdBy User @relation(
-    "AnnouncementCreator",
-    fields: [createdById],
-    references: [id],
-    onDelete: Restrict
-  )
+    createdBy User @relation("AnnouncementCreator", fields: [createdById], references: [id], onDelete: Restrict)
 
-  roleAudiences  AnnouncementRoleAudience[]
-  classAudiences AnnouncementClassAudience[]
+    roleAudiences  AnnouncementRoleAudience[]
+    classAudiences AnnouncementClassAudience[]
 
-  @@index([isPublished, publishedAt])
+    @@index([isPublished, publishedAt])
 }
 
 model AnnouncementRoleAudience {
-  announcementId String   @db.Uuid
-  role           UserRole
+    announcementId String   @db.Uuid
+    role           UserRole
 
-  announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+    announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
 
-  @@id([announcementId, role])
+    @@id([announcementId, role])
 }
 
 model AnnouncementClassAudience {
-  announcementId String   @db.Uuid
-  sectionId      String   @db.Uuid
+    announcementId String @db.Uuid
+    sectionId      String @db.Uuid
 
-  announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
-  section      Section      @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+    announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+    section      Section      @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
-  @@id([announcementId, sectionId])
+    @@id([announcementId, sectionId])
 }
 
 

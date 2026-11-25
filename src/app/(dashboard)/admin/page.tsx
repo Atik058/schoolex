@@ -1,5 +1,5 @@
 export default function Page() {
     return (
-        <div>Admin page</div>
+        <div>Admin dashboard</div>
     );
 }
